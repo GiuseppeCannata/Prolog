@@ -1,0 +1,9 @@
+
+
+:-op(30, fx,non).
+:-op(100,xfy,or).
+:-op(100,xfy,and).
+
+traduci(F,A):-
+    exists(x,p(q,s) and all(p(x,d) and c(w,e))) = T,
+    T=..[F|A].

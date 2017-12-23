@@ -1,0 +1,56 @@
+
+
+
+%Es N47
+%
+%
+%
+codice([0,a,b]).
+
+run(L):-
+    predicato(0,[],ListaInseriti),
+    %sort(ListaInseriti,L).
+    mergesort(ListaInseriti,L).
+
+
+ottieniListaControllo([El1,El2,El3|_],[El3,El2,El1]).
+
+
+predicato(Stop,ListaInseriti,ListaInseriti):-
+    Stop =< 10,
+    length(ListaInseriti,Lung),
+    Lung >= 3,
+    ottieniListaControllo(ListaInseriti,ListaControllo),
+    codice(ListaControllo).
+predicato(Stop,ListaInseriti,L):-
+    Stop =< 10,
+    Stop1 is Stop+1,
+    read(Elemento),
+    predicato(Stop1,[Elemento|ListaInseriti],L).
+
+
+
+mergesort([],[]).    /* covers special case */
+mergesort([A],[A]).
+mergesort([A,B|R],S) :-
+   split([A,B|R],L1,L2),
+   mergesort(L1,S1),
+   mergesort(L2,S2),
+   merge(S1,S2,S).
+
+split([],[],[]).
+split([A],[A],[]).
+split([A,B|R],[A|Ra],[B|Rb]) :-  split(R,Ra,Rb).
+
+merg(A,[],A).
+merg([],B,B).
+merg([A|Ra],[B|Rb],[A|M]) :-
+    name(A,[X]),
+    name(B,[Y]),
+    X =< Y,
+    merge(Ra,[B|Rb],M).
+merg([A|Ra],[B|Rb],[B|M]) :-
+    name(A,[X]),
+    name(B,[Y]),
+    X > Y,
+    merge([A|Ra],Rb,M).

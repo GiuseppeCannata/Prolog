@@ -1,0 +1,24 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+
+
+run(N):-
+    chiedi([],0,L),
+    sort(L,Lista),
+    setof(,,Lista1),
+    .
+
+
+chiedi(['basta'|Lista],_,Lista).
+chiedi(Lista,10,Lista).
+chiedi([X|Visitati],Cont,Lista):-
+    member(X,Visitati),
+    write('Gia inserito'),
+    Cont1 is Cont-1,
+    chiedi(Visitati,Cont1,Lista).
+chiedi(Visitati,Cont,Lista):-
+    write('Dai cifra __'),
+    read(X),
+    Cont1 is Cont+1,
+    chiedi([X|Visitati],Cont1,Lista).

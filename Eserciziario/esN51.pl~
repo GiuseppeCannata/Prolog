@@ -1,0 +1,104 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+
+
+
+
+:- op(30,fx,non).
+:- op(100,xfy,or).
+:- op(100,xfy,and).
+
+%! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+substitute(Old,New,Old,New) :- !.
+
+substitute(Old,New,Term,Term):-
+           atomic(Term),
+           Term \= Old.
+
+substitute(Old,New,Term,Term1):-
+          \+ atomic(Term),
+          functor(Term,F,N),
+          functor(Term1,F,N),
+          substitute(N,Old,New,Term,Term1).
+
+substitute(N,Old,New,Term,Term1):-
+          N > 0,
+          arg(N,Term,Arg),
+          substitute(Old,New,Arg,Arg1),
+          arg(N,Term1,Arg1),
+          N1 is N - 1,
+          substitute(N1,Old,New,Term,Term1).
+
+substitute(0,Old,New,Term,Term1).
+%! %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+valore(f, f) :-!.
+
+valore(v, v) :- !.
+
+valore(non v, f) :- !. % tabella di verità del connettivo non
+valore(non f, v) :- !. %
+valore(v and v, v) :- !. %tabella di verità del connettivo and
+valore(v and f, f) :- !. %
+valore(f and v, f) :- !. %
+valore(f and f, f) :- !. %
+valore(v or v, v) :- !. % tabella di verità del connettivo or
+valore(v or f, v) :- !. %
+valore(f or v, v) :- !. %
+valore(f or f, f) :- !. %
+
+valore(non A,X) :- % determinazione del valore di verità
+      valore(A,A1), % della formula non A, dove A é una
+      valore(non A1,X). % formula proposizionale
+
+valore(A and B,X) :- % determinazione del valore di verità
+     % valore(A,A1), % della formula A and B, dove A e B
+      valore(B,B1), % sono formule proposizionali
+      valore(A and B1,X). %
+
+valore(A or B,X) :- % determinazione del valore di verità
+      valore(A,A1), % della formula A or B, dove A e B
+      valore(B,B1), % sono formule proposizionali
+      valore(A1 or B1,X).
+
+
+
+val(0,f).
+val(1,v).
+
+tabella(FP):-
+    trovaAtomi(FP,LA),  %trovo gli atomi dentro la formula propoposizionale( FP )
+    write(LA),nl,
+    genera(LA,Sequenza),   %genero le sequenze di interpretazione
+    write(Sequenza),write(' '),
+    sostituisci(LA,Sequenza,FP,V),    %attuo la sostituzione dell interpretazione alla formula proposizionale
+    write(V),nl,
+    false.
+
+
+sostituisci([],[],NFP,FPV):-
+    valore(NFP,FPV).
+sostituisci([Atom|C],[Valore|C1],FP,FPV):-
+    substitute(Atom,Valore,FP,FP1),
+    sostituisci(C,C1,FP1,FPV).
+
+atomi(F,F) :-
+    atomic(F).
+atomi(F,L) :-
+    \+ atomic(F),
+    F =.. [_|Argomenti],
+    member(X,Argomenti),
+    atomi(X,L).
+
+
+trovaAtomi(FP,LA):-
+       setof(X, atomi(FP,X), LA).
+
+genera([],[]).
+genera([_|C],[Valore|Sequenza]):-
+    between(0,1,X),
+    val(X,Valore),
+    genera(C,Sequenza).
+

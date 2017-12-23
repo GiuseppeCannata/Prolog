@@ -1,0 +1,115 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+
+
+diz(bella,beautiful).
+diz(beffa,derision).
+diz(bolla,bubble).
+diz(pianta,tree).
+diz(fianco,side).
+diz(una,a).
+
+traduci:-
+    write('Dai una frase'),nl,
+    read(LIns),
+    \+ LIns = [],
+    findall( Traduzione ,( member(X,LIns), controllo(X,Traduzione) ), Lista),
+    write(Lista),
+    traduci.
+
+traduci.
+
+
+controllo(Italiano,Traduzione):-
+    diz(Italiano,Traduzione),
+    !.
+controllo(Italiano,Traduzione):-  %IL SETOF FALLISCE NEL CASO IN CUI LungDB = LungIns FALLISCE
+    %scindo la parola inserita in lista di caratteri
+    atom_chars(Italiano,ListaIns),
+    length(ListaIns,LungIns),
+    setof(ItDBLista-Traduzione ,( diz(X,Traduzione),
+                                  atom_chars(X,ItDBLista),
+                                  length(ItDBLista,LungDB),
+                                  LungDB = LungIns,
+                                  diversita1(ItDBLista,ListaIns,0,Div),
+                                  Div = 1
+                                ),
+          ListaUno),
+    sceltaparola(ListaUno,ListaIns,Traduzione),
+    !.
+controllo(Italiano,Traduzione):-
+    atom_chars(Italiano,ListaIns),
+    length(ListaIns,LungIns),
+    findall(ItDBLista-Traduzione ,( diz(X,Traduzione),
+                                  atom_chars(X,ItDBLista),
+                                  length(ItDBLista,LungDB),
+                                  LungDB = LungIns,
+                                  diversita2(ItDBLista,ListaIns,0,Div),
+                                  Div = 2
+                                ),
+          ListaDue),
+    sceltaparola(ListaDue,ListaIns,Traduzione),
+    !.
+controllo(Italiano,Traduzione):-
+    atom_chars(Italiano,[T|C]),
+    length([T|C],LungIns),
+    genera(T,LungIns,[],Traduzione),
+    !.
+
+
+
+genera(_,0,App,Traduzione):-
+    atom_chars(Traduzione,App).
+genera(Lettera,Cont,App,Traduzione):-
+    Cont1 is Cont-1,
+    genera(Lettera,Cont1,[Lettera|App],Traduzione).
+
+
+
+
+%abbiamo trovato nel DB una sola lettera
+sceltaparola([_-Traduzione|[]],_,Traduzione).
+sceltaparola(ListaUno,ListaIns,Traduzione):-
+    %calcoliamo la distanza delle parole trovate per prendere quella piu breve
+    %setof ordina in maniera crescente rispetto Distanza
+    findall( Distanza-Tra,( member(Parola-Tra,ListaUno), distanza(Parola,ListaIns,_,Distanza) ), Lista ),
+    sort(Lista,ListaOrd),
+    ListaOrd = [_-Traduzione|_].
+
+distanza([],[],Distanza,Distanza):-
+    !.
+distanza([X|C],[X|C1],App,Distanza):-
+    distanza(C,C1,App,Distanza),
+    !.
+distanza([X|C],[Y|C1],_,Distanza):-
+    name(X,[ASCIIX]),
+    name(Y,[ASCIIY]),
+    Distanza1 is abs(ASCIIX-ASCIIY),
+    distanza(C,C1,Distanza1,Distanza),
+    !.
+
+
+diversita1([],[],Div,Div):-
+    !.
+diversita1([X|C],[X|C1],Cont,Div):-
+    diversita1(C,C1,Cont,Div),
+    !.
+diversita1([_|C],[_|C1],Cont,Div):-
+    Cont1 is Cont+1,
+    diversita1(C,C1,Cont1,Div),
+    !.
+
+diversita2([],[],Div,Div):-
+    !.
+diversita2([X|C],[X1|C1],Cont,Div):-
+      \+ X = X1,
+      C = [Y|_],
+      C1 = [Y1|_],
+      \+ Y = Y1,
+      Cont1 is Cont+2,
+      diversita2(C,C1,Cont1,Div).
+diversita2([_|C],[_|C1],Cont,Div):-
+    diversita2(C,C1,Cont,Div),
+    !.
+

@@ -1,0 +1,43 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+%then enter the text in that file's own buffer.
+
+%es N 22
+%Ok, funziona
+%
+fine(0).
+
+medie(X,N):-
+    main(0,N,0,X).
+
+
+main(NumInseriti,N,VecchiaSomma,L):-
+    prendi(Elemento,N),
+    Inseriti is NumInseriti+1,
+    media(Elemento,Inseriti,Media,VecchiaSomma,SommaNuova),
+    write('Sono stati immessi '),write(Inseriti),write(' numeri'),write(' la cui media è'),write(Media),
+    crealista(Elemento,L, Inseriti, N, SommaNuova).
+
+main(_,_,_,[]).
+
+crealista(Atom,[Atom|C],Inseriti, N, SommaNuova ):-
+   main(Inseriti, N, SommaNuova ,C).
+
+prendi(Elemento,N):-
+    nl,write('Dai Elemento: '),
+    read(Elemento),
+    number(Elemento),
+    \+ fine(Elemento),
+    Elemento < N.
+
+prendi(Elemento,N):-
+    \+ fine(Elemento),
+    write('Controllrare!'),nl,write('Non sono ammessi ne lettere ne numeri maggiori di'),write(N),nl,
+    prendi(_,N).
+
+
+
+media(Elemento,QuantiNumInseriti,Media,VecchiaSomma,Somma):-
+    Somma is Elemento+VecchiaSomma,
+    Media is Somma/QuantiNumInseriti.
+

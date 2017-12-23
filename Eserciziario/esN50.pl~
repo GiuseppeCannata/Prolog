@@ -1,0 +1,89 @@
+
+%Es N50
+%
+%da risolvere
+%
+
+% studiando il Db mi sono accorto che c è una ricerca in profondità.
+% Questo accade fino a Piazza Cavour dove posso prendere due strade:
+% galleria o corso garibaldi.
+%
+% se non metto la bidirezionalità non posso muovermi da dorico.
+% ma se la metto vado in loop, per risoddisfaciemnto del setof,
+% se impedissi il risoddisfacimento di setof, otterrei il percorso, ma
+% non quello ottimo, ma cosa piu importante farei
+% una dfs, e non ha senso
+%
+% Ho per questo fatto delle modifiche:
+% connesso(piazza_diaz,dorico,viale_della_vittoria,3).
+% per me diventa
+% connesso(dorico,piazza_diaz,viale_della_vittoria,3).
+%
+% cosi facendo non ho problemi in quanto loop. Lunica cosa che il
+% setof non funziona come dovrebbe poichè mi scarta
+% arrivato a cavour un percorso, non riesco a capire
+% perchè.
+% Ho utilizzato un findall per eliminare questo problema
+%
+%
+% connesso(L1,L2,V,D), dove L1 e L2 sono due luoghi geografici, V
+% é la via che li collega e D é la distanza che li separa.
+
+connesso(passetto,dorico,viale_della_vittoria,3).
+connesso(dorico,passetto,viale_della_vittoria,3).
+
+connesso(piazza_diaz,piazza_cavour,viale_della_vittoria,7).
+connesso(piazza_cavour,piazza_repubblica,corso_garibaldi,5).
+connesso(piazza_repubblica,s2,via_29_settembre,7).
+connesso(s2,piazza_italia,viale_marconi,8).
+connesso(piazza_italia,piazza_ugo_bassi,corso_carlo_alberto,7).
+connesso(piazza_liberta,piazza_europa,via_martiri_resistenza,6).
+connesso(piazza_cavour,piazza_liberta,galleria,9).
+connesso(piazza_liberta,piazza_europa,via_martiri_resistenza,6).
+connesso(piazza_europa,piazza_ugo_bassi,via_ricostruzione,4).
+connesso(piazza_ugo_bassi,pinocchio,via_maggini,14).
+
+
+connesso(dorico,piazza_diaz,viale_della_vittoria,3).
+
+
+
+vai(Partenza,Arrivo,Percorso,Distanza):-
+     ucs([0-[Partenza]],Arrivo,C-P,[],Percorso,Distanza).
+     %reverse(P,Percorso).
+
+
+ucs([C-[Arrivo|Perc]|_],Arrivo,C-[Arrivo|Perc],Percorso,Percorso,C).
+
+ucs([C-Percorso|Percorsi],Arrivo,Soluzione,Vie,Per,Costo):-
+  espansione(C-Percorso,PercorsiEstesi,Distanza-VIA),
+  controllo(Distanza-VIA,Vie,Vie1),
+  fusioneOrdinata(PercorsiEstesi,Percorsi,NuoviPercorsi),
+  ucs(NuoviPercorsi,Arrivo,Soluzione,Vie1,Per,Costo).
+
+
+controllo(Distanza-VIA,Vie,Vie1):-
+    member(p(X-VIA),Vie),
+    NuovaDistanza is X+Distanza,
+    scorri(NuovaDistanza-VIA,Vie,Vie1).
+
+controllo(Distanza-VIA,Vie,[p(Distanza-VIA)|Vie]).
+
+scorri(NuovaDistanza-VIA,[p(_-VIA)|C],[p(NuovaDistanza-VIA)|C]).
+scorri(NuovaDistanza-VIA,[T|C],[T|U]):-
+      scorri(NuovaDistanza-VIA,C,U).
+
+espansione(C-[N|P],Percorsi,Distanza-VIA):-
+ findall(CC-[NN,N|P],( connesso(N,NN,VIA,Distanza), \+ member(NN,[N|P]), CC is C+Distanza ), Percorsi),
+  !.
+espansione(_-_,[],0-_). % non fa fallire espansione
+
+fusioneOrdinata([],L,L).
+fusioneOrdinata(L,[],L).
+fusioneOrdinata([C1-P1|CP1],[C2-P2|CP2],[C1-P1|Coda]) :-
+	C1 =< C2,
+	fusioneOrdinata(CP1,[C2-P2|CP2],Coda).
+fusioneOrdinata([C1-P1|CP1],[C2-P2|CP2],[C2-P2|Coda]) :-
+	C1 > C2,
+	fusioneOrdinata([C1-P1|CP1],CP2,Coda).
+

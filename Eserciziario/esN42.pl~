@@ -1,0 +1,32 @@
+
+
+
+%esN43
+%
+%
+
+run(L):-
+    findall(X,(member(X,L),\+ atomic(X), \+ contienefuntori(X)),Lista),
+    sort(Lista,ListaOrdinata), %chiedere perchè non ordina lessograficamente
+    write('Funtore'),write('     '),write('Argomenti'),
+    stampa(ListaOrdinata).
+
+
+stampa([]).
+stampa([Termine|C]):-
+    nl,
+    Termine =..[Funtore|Argomenti],
+    write(Funtore),write('          '),stampaargomenti(Argomenti),
+    stampa(C).
+
+
+stampaargomenti([]).
+stampaargomenti([Argomento|C]):-
+        write(Argomento),write(' '),
+    stampaargomenti(C).
+
+
+contienefuntori(Termine):-
+    Termine =..L,
+    member(X,L),
+   \+ atomic(X).

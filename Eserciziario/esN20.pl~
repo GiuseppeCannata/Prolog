@@ -1,0 +1,35 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+
+%es N20
+%
+%
+%
+
+parole(L,L1):-
+    main(L,L1,[]),
+    !.
+
+
+main([],[],_).
+main([Parola|C],L,Visitati):-
+    \+ member(Parola,Visitati),
+    scansiona(Parola,C,1,Elemento),
+    crealista(C,Elemento,L,Visitati).
+main([_|C],L,Visitati):-
+    main(C,L,Visitati).
+
+
+scansiona(Parola,[],Freq, Parola-Freq).
+scansiona(Parola,[T|C], Freq ,Elemento):-
+    Parola = T,
+    Freq1 is Freq+1,
+    scansiona(Parola,C, Freq1, Elemento).
+
+
+scansiona(Parola,[_|C],Freq,ListaConFreq):-
+    scansiona(Parola,C,Freq,ListaConFreq).
+
+crealista(RestoParole,Parola-Freq,[Parola-Freq|C],Visitati):-
+    main(RestoParole,C,[Parola|Visitati]).

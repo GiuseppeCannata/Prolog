@@ -1,0 +1,93 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+
+%es N52
+%
+%prima di testare eliminare assert preced3edenti
+%
+%
+%
+esamina(L1,L2):-
+    %utilizzo il setof in modo tale da garantire il calcolo della frequenza dei numeri non piu di una volta
+    %ex: [1,2,1,3]
+    %     numero/frequenza
+    %    1/2 2/1 1/2 3/1
+    %    il set of non ripeterà due volte 1/2
+    setof(int(I,F),( member(I,L1), occorrenza(I,L1,0,F)), L),
+    quicksort(L,L2),
+    assert(lista_f(L2)).
+
+
+occorrenza(_,[],Occ,Occ).
+occorrenza(Lettera,[Lettera|C],App,Occ):-
+    Occ1 is App+1,
+    occorrenza(Lettera,C,Occ1,Occ),
+    !.
+occorrenza(Lettera,[_|C],App,Occ):-
+    occorrenza(Lettera,C,App,Occ),
+    !.
+
+
+totale(_):-
+   %verifico se nel DB c è una clausola che match con Head data
+    \+ clause(lista_f(L),_),
+    write('Nessuna clausola nel DB'),nl,
+    !.
+
+totale(A):-
+    %Lista sarà una lista di liste
+    findall(L, lista_f(L), Lista),
+    %appiattisce la lista di liste
+    findall(T, ( member(L,Lista), member(T,L) ), ListaPiatta),
+    %calcola le frequenze degli assert nel DB
+    setof(int(I,F),I^( member(int(I,_),ListaPiatta), occorrenza1(I,ListaPiatta,0,F) ), A),
+    retractall(lista_f(L)).
+
+
+occorrenza1(_,[],Occ,Occ).
+occorrenza1(Lettera,[int(Lettera,F)|C],App,Occ):-
+    Occ1 is App+F,
+    occorrenza1(Lettera,C,Occ1,Occ).
+occorrenza1(Lettera,[_|C],App,Occ):-
+    occorrenza1(Lettera,C,App,Occ).
+
+
+
+quicksort([X|Xs],Ys) :-
+  partitio(Xs,X,Left,Right),
+  quicksort(Left,Ls),
+  quicksort(Right,Rs),
+  appen(Ls,[X|Rs],Ys).
+quicksort([],[]).
+
+partitio([X|Xs],Y,[X|Ls],Rs) :-
+  X = int(_,F),
+  Y = int(_,F1),
+  F > F1,
+  partitio(Xs,Y,Ls,Rs).
+partitio([X|Xs],Y,Ls,[X|Rs]) :-
+  X = int(_,F),
+  Y = int(_,F1),
+  F < F1,
+  partitio(Xs,Y,Ls,Rs).
+partitio([X|Xs],Y,Ls,[X|Rs]) :-
+  X = int(I,F),
+  Y = int(I1,F1),
+  F = F1,
+  I =< I1,
+  partitio(Xs,Y,Ls,Rs).
+partitio([X|Xs],Y,Ls,[X|Rs]) :-
+  X = int(I,F),
+  Y = int(I1,F1),
+  F = F1,
+  I > I1,
+  partitio(Xs,Y,Ls,Rs).
+partitio([],Y,[],[]).
+
+appen([],Ys,Ys).
+appen([X|Xs],Ys,[X|Zs]) :- appen(Xs,Ys,Zs).
+
+
+
+

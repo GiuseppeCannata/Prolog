@@ -1,0 +1,108 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+
+%es N 27
+%
+%
+diff(N1,N2,N,Segno):-
+    length(N1,Lung1),
+    length(N2,Lung2),
+    (
+       %1 caso
+       %N1 = [3,2,1,4,8]  N2 = [6,2,5,8]
+       Lung1 > Lung2,
+       Cont is Lung1-Lung2,  %QUANTI ZERI DEVO AGGIUNGERE PER PAREGGIARE?
+       pareggia(N2,Cont,NPareggiata), % pareggio della lista di cadinalità minore [0,6,2,5,8]
+       reverse(N1,N11),        %faccio il reverse perche è piu semplice fare la differenza cosi
+       reverse(NPareggiata,N22),
+       differenza(N11,N22,Risultato,0),
+       Segno = (+)
+       ;
+       %2 caso
+       %N1 = [6,2,5,8] N2 = [3,2,1,4,8]
+       Lung1 < Lung2,
+       Cont is Lung2-Lung1,  %QUANTI ZERI DEVO AGGIUNGERE PER PAREGGIARE?
+       pareggia(N1,Cont,NPareggiata),   % pareggio della lista di cadinalità minore [0,6,2,5,8]
+       reverse(NPareggiata,N11),    %faccio il reverse perche è piu semplice fare la differenza cosi
+       reverse(N2,N22),
+       differenza(N22,N11,Risultato,0),
+       Segno = (-)
+       ;
+       %3 caso
+       %Lung1 == Lung2
+       %N1=[2,1,2,5,8] N2=[2,1,2,4,3]
+       vediChiEpiuGrande(N1,N2,R),  %Mi serve per capire qual è il numero piu grande in modo da sottrarre maggiore-minore
+                                    %R è la risposta:    R = 1  --> i due numeri o uguali o N1 è maggiore
+                                    %                    R = 2  --> N2 è maggiore
+       reverse(N1,N11),
+       reverse(N2,N22),
+          (
+              R=1,
+              differenza(N11,N22,Risultato,0),
+              Segno = (+)
+              ;
+              R = 2,
+              differenza(N22,N11,Risultato,0),
+              Segno = (-)
+           )
+    ),
+    reverse(Risultato,Riv),
+    verificaZeri(Riv,N),
+    !.
+
+verificaZeri([T|C],N):-
+    T = 0,
+    verificaZeri(C,N).
+verificaZeri(C,C).
+
+
+
+vediChiEpiuGrande([],[],1).
+vediChiEpiuGrande([T1|C1],[T2|C2],R):-
+    T1 >= T2,
+    vediChiEpiuGrande(C1,C2,R).
+vediChiEpiuGrande(_,_,2).   %se fallisce T>T1 significa che N1 è maggiore
+
+
+
+
+pareggia(DaPareggiare,Cont,Pareggiata):-
+    crealista(Cont, Pareggio ),
+    append(Pareggio, DaPareggiare, Pareggiata).
+crealista(0,[]).
+crealista(Cont,[0|C]):-
+    Cont1 is Cont-1,
+    crealista(Cont1,C).
+
+
+
+%fa la differenza fra i due numeri
+%DEC --> è la variabile che indica le decine richieste
+differenza([],[],[],_).
+differenza([T|C],[T1|C1],[T2|U],DEC):-
+    DEC = 0,
+    (
+       T >= T1,
+       T2 is T-T1,
+       differenza(C,C1,U,0)
+       ;
+       T < T1,
+       T2 is (10+T)-T1,
+       differenza(C,C1,U,1)
+    ).
+
+differenza([T|C],[T1|C1],[T2|U],DEC):-
+    DEC = 1,
+    Opdec is T-1,
+    (
+       Opdec < T1,
+       T2 is (10+Opdec)-T1,
+       differenza(C,C1,U,1)
+       ;
+       Opdec > T1,
+       T2 is Opdec-T1,
+       differenza(C,C1,U,0)
+     ).
+
+

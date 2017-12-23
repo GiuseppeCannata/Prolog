@@ -1,0 +1,91 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+%
+%
+%esN 25
+%
+%
+%
+%database Prolog
+
+
+on(3,3).
+on(3,4).
+on(3,5).
+on(3,6).
+on(3,7).
+on(4,3).
+on(4,7).
+on(5,3).
+on(5,7).
+on(6,3).
+on(6,7).
+on(7,3).
+on(7,7).
+on(7,4).
+on(7,5).
+on(7,6).
+on(1,1).
+
+emptyDestra(X,Y):-
+    X1 is X+1,
+    \+ on(X1,Y).
+
+emptySinistra(X,Y):-
+    X1 is X-1,
+    \+ on(X1,Y).
+
+emptyTop(X,Y):-
+    Y1 is Y+1,
+    \+ on(X,Y1).
+
+emptyBottom(X,Y):-
+    Y1 is Y-1,
+    \+ on(X,Y1).
+
+%punto isolato
+punto(X,Y):-
+    on(X,Y),
+    emptyDestra(X,Y),
+    emptySinistra(X,Y),
+    emptyTop(X,Y),
+    emptyBottom(X,Y).
+
+%segmanto verticale
+%
+verticale(X,Y,X1,Y1):-
+    on(X,Y),
+    emptyBottom(X,Y), %prendo dal DB l estremo inf del segmento, l estremo inf deve essere vuoto sotto e non vuoto sopra
+    \+ emptyTop(X,Y),
+    estremo(X,Y,X1,Y1), %cerco l altro estremo
+    emptyTop(X1,Y1).  %lo deo mettere senno se vado a falsificare ; mi da segmenti che non desidero
+
+estremo(X,Y,X1,Y1):-
+    Appog is Y+1,
+    on(X,Appog),
+    estremo(X,Appog,X1,Y1).
+estremo(X1,Y1,X1,Y1).
+
+
+%rettangolo
+%
+rettangolo(X1,Y1,X2,Y2,X3,Y3,X4,Y4):-
+    verticale1(X1,Y1,Q,W),
+    Q = X4,
+    W = Y4,
+    verticale1(X2,Y2,R,T),
+    R = X3,
+    T = Y3.
+%manca l orizzontale
+
+verticale1(X,Y,X1,Y1):-
+    emptyBottom(X,Y), %prendo dal DB l estremo inf del segmento, l estremo inf deve essere vuoto sotto e non vuoto sopra
+    \+ emptyTop(X,Y),
+    estremo(X,Y,X1,Y1), %cerco l altro estremo
+    emptyTop(X1,Y1).  %lo deo mettere senno se vado a falsificare ; mi da segmenti che non desidero
+
+
+
+
+

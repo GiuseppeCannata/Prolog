@@ -1,0 +1,27 @@
+
+
+
+%Es N47
+%
+%
+%
+codice([0,a,b]).
+
+run(L):-
+    predicato(0,_,[],[],L).
+
+
+predicato(10,_,Lista,Lista).
+predicato(Stop,3,ListaControlloInversa,Lista,_):-
+    reverse(ListaControlloInversa,ListaControllo),
+    \+ codice(ListaControllo),
+    predicato(Stop,0,[],Lista,_).
+predicato(_,3,_,Lista,Lista).
+predicato(Stop,Cont,ListaControllo,Lista,L):-
+    Stop1 is Stop+1,
+    read(Elemento),
+    length(ListaControllo,Cont1),
+    predicato(Stop1,Cont1,[Elemento|ListaControllo],[Elemento|Lista],L).
+
+
+

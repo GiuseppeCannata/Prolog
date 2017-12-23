@@ -1,0 +1,213 @@
+\\\PREDICATI BUILT-IN
+
+
+
+======================================================
+atomic(X)
+
+fallisce se il termine è una variabile
+
+======================================================
+atom(X)
+
+fallisce se il termine è una variabile o un numero
+======================================================
+\\\\Da stringa a lista
+
+atom_chars(?Atom, ?CharList)
+
+?- atom_chars(hello, X).
+
+X = [h, e, l, l, o]
+
+======================================================
+\\\\\fontore
+
+1)
+Term = ..[Funtore|Argomenti]
+
+2)
+functor(Term,Funtore,Numero argomenti termine)
+
+3)
+arg(N,Term,Argomento)
+
+======================================================
+\\\\\\\op
+
+:-op(Precedenza,Posizione,Operatore).
+
+xfy
+
+f -> funtore
+
+x,y -> mentre x e y indicano la posizione degli argomenti:
+       y 'dovrebbeverificarsi un termine con precedenza inferiore o uguale 
+          alla precedenza del funtore. 
+
+       x la precedenza del termine deve essere strettamente inferiore
+
+
+
+
+=======================================================
+
+
+
+
+
+
+\\\PREDICATI NON BUILT-IN
+
+==========================================================
+\\\\creazione lista
+
+lista(L):-
+     write('Inserire elemento:'),nl,
+     get(X),   %restituisce ASCII
+     name(Atom,[X]),   %conversione da ASCII a carattere
+     crealista(Atom,L).
+
+crealista(A,[]):-
+    caratteredifine(A).
+crealista(Atom,[Atom|C]):-
+    lista(C).
+==========================================================
+
+\\\\\stampa lista
+
+stampa([]).
+stampa([T|C]):-
+    write(T),write(' '),
+    stampa(C).
+
+==========================================================
+\\\nodi visitati
+
+ chiamata:  verifica(qual,[],qual)  -->ricorda di passare la lista vuota
+
+Nota: nota che ogni volta in ListaVisitati avrai i vari nodi che sono stati visitati
+verifica([T|C],ListaVisitati,ListaConOccor):-
+    .
+    .
+    verifica(T/Occor, C,[T|ListaVisitati], ListaConOccor).
+nota:ogni volta andrai ad aggiungere il nodo visitato nuovo
+
+==========================================================
+\\\funzione per cercare il max
+
+%utilizza la ricerca sequenziale
+
+mandaMax([T|C],Max):-
+    max(T,C,Max).
+
+max(Max,[],Max).
+max(Elemento,[T|C],Max):-
+    Elemento > T,
+    Max1 = Elemento,
+    max(Max1,C,Max).
+max(_,[Elemento|C],Max):-
+    max(Elemento,C,Max).
+===========================================================
+\\\funzione per cercare il minimo (esegue ricerca sequenziale)
+
+mandaMin([T|C],Min):-
+    min(T,C,Min).
+
+min(Min,[],Min).
+min(Elemento,[T|C],Min):-
+    Elemento < T,
+    Min1 = Elemento,
+    min(Min1,C,Min).
+min(_,[Elemento|C],Min):-
+    min(Elemento,C,Min).
+
+===========================================================
+\\\\\quicksort (crescente)
+
+
+quicksort2([X|Xs],Ys) :-
+  partitio2(Xs,X,Left,Right),
+  quicksort2(Left,Ls),
+  quicksort2(Right,Rs),
+  appen2(Ls,[X|Rs],Ys).
+quicksort2([],[]).
+
+partitio2([X|Xs],Y,[X|Ls],Rs) :-
+  X =< Y, partitio2(Xs,Y,Ls,Rs).
+partitio2([X|Xs],Y,Ls,[X|Rs]) :-
+  X > Y, partitio2(Xs,Y,Ls,Rs).
+partitio2([],Y,[],[]).
+
+appen2([],Ys,Ys).
+appen2([X|Xs],Ys,[X|Zs]) :- appen2(Xs,Ys,Zs).
+
+==========================================================
+\\merge (crescente)
+
+mergesort([],[]).    /* covers special case */
+mergesort([A],[A]).
+mergesort([A,B|R],S) :-  
+   split([A,B|R],L1,L2),
+   mergesort(L1,S1),
+   mergesort(L2,S2),
+   merge(S1,S2,S).
+
+split([],[],[]).
+split([A],[A],[]).
+split([A,B|R],[A|Ra],[B|Rb]) :-  split(R,Ra,Rb).
+
+merg(A,[],A).
+merg([],B,B).
+merg([A|Ra],[B|Rb],[A|M]) :-  A =< B, merge(Ra,[B|Rb],M).
+merg([A|Ra],[B|Rb],[B|M]) :-  A > B,  merge([A|Ra],Rb,M).
+
+
+===========================================================
+\\\eliminaDoppioni
+
+eliminaDoppioni([],[]).
+eliminaDoppioni([T|C],[T|U]):-
+   \+ member(T,C),
+   eliminaDoppioni(C,U).
+eliminaDoppioni([_|C],LU):-
+    eliminaDoppioni(C,LU).
+
+===========================================================
+\\\\occorrenza per setof
+
+occorrenza(_,[],Occ,Occ).
+occorrenza(Lettera,[Lettera|C],App,Occ):-
+    Occ1 is App+1,
+    occorrenza(Lettera,C,Occ1,Occ),
+    !.
+occorrenza(Lettera,[_|C],App,Occ):-
+    occorrenza(Lettera,C,App,Occ),
+    !.
+
+============================================================
+\\\\
+
+LANCIO:-
+  trasposta(1,N,Mat,MatT).
+
+N--> numero colonne Mat
+
+trasposta(Colonna,N,_,[]):-
+    Colonna > N.
+trasposta(Colonna,N,Mat,[Lista|MatT]):-
+    prendi(Colonna,Mat,Lista),
+    Colonna1 is Colonna+1,
+    trasposta(Colonna1,N,Mat,MatT),
+    !.
+prendi(_,[],[]).
+prendi(Colonna,[Lista|C],[Elemento|MatT]):-
+    scorri(Colonna,1,Lista,Elemento),
+    prendi(Colonna,C,MatT).
+scorri(Colonna,Colonna,[Elemento|_],Elemento).
+scorri(Colonna,Con,[_|C],Elemento):-
+    Con1 is Con+1,
+    scorri(Colonna,Con1,C,Elemento).
+
+
+

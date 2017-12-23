@@ -1,0 +1,59 @@
+% This buffer is for notes you don't want to save.
+% If you want to create a file, visit that file with C-x C-f,
+% then enter the text in that file's own buffer.
+
+%es N 31
+%Ok
+%
+/*
+%(N,[1,2,3,4],[2,3,4,1])
+ruota(N,L,L1):-
+    var(N),
+    is_list(L),
+    is_list(L1),
+    vai(L,L,L1,N).
+
+vai([T|_],L,L1,N):-
+    dividi(T,L,0,CodaNuova,TestaNuova),
+    append(TestaNuova,CodaNuova,L2),
+    L2 = L1,
+    N = T.
+vai([_|C],L,L1,N):-
+    vai([_|C],L,L1,N).
+
+
+
+
+%(3,[1,2,3,4],L)
+ruota(N,L,L1):-
+    \+ var(N),
+    is_list(L),
+    var(L1),
+    dividi(N,L,0,CodaNuova,TestaNuova),
+    append(TestaNuova,CodaNuova,L1).
+
+
+
+
+%(2,[1,2,3,4],[3,4,1,2]).
+ruota(N,L,L1):-
+    dividi(N,L,0,CodaNuova,TestaNuova),
+    append(TestaNuova,CodaNuova,L2),
+    L2 = L1.
+
+
+dividi(N,CodaVecchia,N,[],CodaVecchia).
+dividi(N,[T|C],Cont,CodaNuova,CodaVecchia):-
+    Cont1 is Cont+1,
+    crealista(N,C,T,Cont1,CodaNuova,CodaVecchia).
+
+crealista(N,C,T,Cont,[T|V],CodaVecchia):-
+    dividi(N,C,Cont,V,CodaVecchia).
+
+altra soluzione */
+
+ruota(N,L,Lout):- append(Lx,Ly,L),
+                  length(Lx,N),
+                  append(Ly,Lx,Lout).
+
+
